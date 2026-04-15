@@ -1,0 +1,60 @@
+name: Capsule
+options:
+  bundleIdPrefix: com.arjun.capsule
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  Capsule:
+    type: application
+    platform: iOS
+    sources:
+      - path: Capsule
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "Capsule needs access to your photos to lock away memories you need space from."
+        INFOPLIST_KEY_NSUserNotificationsUsageDescription: "Capsule sends milestone reminders and daily check-in prompts during your healing."
+        PRODUCT_BUNDLE_IDENTIFIER: com.arjun.capsule.app
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    entitlements:
+      path: Capsule/Capsule.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.capsule.app
+
+  CapsuleWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: CapsuleWidget
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.arjun.capsule.app.widget
+        ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
+        INFOPLIST_KEY_CFBundleDisplayName: Capsule Widget
+        INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: CapsuleWidget/CapsuleWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.capsule.app
+    dependencies:
+      - target: Capsule
+        embed: false
+        link: false

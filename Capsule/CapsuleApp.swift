@@ -24,33 +24,40 @@ struct CapsuleApp: App {
 
 struct RootView: View {
     @Environment(\.modelContext) private var context
-    @Query(filter: #Predicate<Vault> { $0.state == "locked" || $0.state == "cooldown" || $0.state == "unlocked" },
-           sort: \Vault.createdAt, order: .reverse)
-    private var activeVaults: [Vault]
+    @Query(sort: \Vault.createdAt, order: .reverse)
+    private var allVaults: [Vault]
 
     let vaultService: VaultService
     let photoService: PhotoService
 
+    private var activeVault: Vault? {
+        let active = Set(["locked", "cooldown", "unlocked"])
+        return allVaults.first { active.contains($0.state) }
+    }
+
     var body: some View {
-        Group {
-            if let vault = activeVaults.first {
-                if vault.vaultState == .unlocked || vault.isExpired {
-                    UnlockCeremonyView(vault: vault, vaultService: vaultService)
-                } else {
-                    HomeView(vault: vault, vaultService: vaultService)
+        content
+            .preferredColorScheme(.dark)
+            .onAppear {
+                if let vault = activeVault {
+                    vaultService.checkAndUpdateState(vault)
                 }
+            }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if let vault = activeVault {
+            if vault.vaultState == .unlocked || vault.isExpired {
+                UnlockCeremonyView(vault: vault, vaultService: vaultService)
             } else {
-                OnboardingContainerView(
-                    vaultService: vaultService,
-                    photoService: photoService
-                ) { _ in }
+                HomeView(vault: vault, vaultService: vaultService)
             }
-        }
-        .preferredColorScheme(.dark)
-        .onAppear {
-            if let vault = activeVaults.first {
-                vaultService.checkAndUpdateState(vault)
-            }
+        } else {
+            OnboardingContainerView(
+                vaultService: vaultService,
+                photoService: photoService
+            ) { _ in }
         }
     }
 }

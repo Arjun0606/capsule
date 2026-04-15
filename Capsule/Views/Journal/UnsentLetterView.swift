@@ -6,7 +6,7 @@ struct UnsentLetterView: View {
 
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
-    @State private var body = ""
+    @State private var letterText = ""
     @FocusState private var isFocused: Bool
 
     private let prompts = [
@@ -43,7 +43,7 @@ struct UnsentLetterView: View {
                     .padding(.horizontal, Theme.padding)
 
                     // Text editor
-                    TextEditor(text: $body)
+                    TextEditor(text: $letterText)
                         .font(Theme.body)
                         .foregroundStyle(Theme.textPrimary)
                         .scrollContentBackground(.hidden)
@@ -63,7 +63,7 @@ struct UnsentLetterView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { saveLetter() }
                         .foregroundStyle(Theme.accent)
-                        .disabled(body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(letterText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 ToolbarItem(placement: .principal) {
                     Text("Unsent Letter")
@@ -79,7 +79,7 @@ struct UnsentLetterView: View {
     }
 
     private func saveLetter() {
-        let trimmed = body.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = letterText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
         let entry = JournalEntry(body: trimmed, prompt: currentPrompt)
